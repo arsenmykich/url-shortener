@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
+using BusinessLogicLayer.Services;
+using DataAccessLayer.Repositories;
+using BusinessLogicLayer.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //</>
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+
+
 //Authorization authentication
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
@@ -24,10 +34,13 @@ builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 //</>
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+
+//repository adding
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddScoped<UrlService>();
+//</>
 
 var app = builder.Build();
 
@@ -40,6 +53,11 @@ if (!app.Environment.IsDevelopment())
 }
 //
 app.MapIdentityApi<User>();
+app.MapPost("/logout", async (SignInManager<User> signInManager) =>
+{
+    await signInManager.SignOutAsync();
+    return Results.Ok(new { message = "Logged out successfully" });
+});
 //
 app.UseHttpsRedirection();
 app.UseStaticFiles();
