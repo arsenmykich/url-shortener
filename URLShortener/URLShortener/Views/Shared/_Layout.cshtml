@@ -26,8 +26,25 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
                 </div>
             </div>
+            <!-- Views/Shared/_Layout.cshtml -->
+            <nav>
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-controller="About" asp-action="Index">About</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <span>Welcome, @User.Identity.Name!</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-link">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login">Login</a>
+                }
+            </nav>
         </nav>
     </header>
     <div class="container">
