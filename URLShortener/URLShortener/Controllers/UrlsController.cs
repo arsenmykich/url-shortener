@@ -22,6 +22,7 @@ namespace URLShortener.Controllers
     public class UrlsController : ControllerBase
     {
         private readonly UrlService _urlService;
+
         private readonly UrlShorteningService _urlShorteningService;
         private readonly UserManager<User> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -34,6 +35,7 @@ namespace URLShortener.Controllers
             _urlService = urlService;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+
         }
 
 
@@ -49,6 +51,7 @@ namespace URLShortener.Controllers
             var url = _urlService.GetUrlById(id);
             return Ok(url);
         }
+
 
         //[Authorize]
         //[HttpPost]
@@ -83,13 +86,14 @@ namespace URLShortener.Controllers
 
 
 
+
         [HttpPut]
         public IActionResult Put([FromBody] UrlDTO urlDTO)
         {
             _urlService.UpdateUrl(urlDTO);
             return Ok();
         }
-        //[Authorize(Roles = "Admin")]
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
