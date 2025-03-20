@@ -1,0 +1,56 @@
+﻿@using System.Security.Claims
+@model URLShortener.ViewModels.UrlTableViewModel
+
+<h2>Short URLs</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Original URL</th>
+            <th>Shortened URL</th>
+            @if (Model.IsAuthenticated)
+            {
+                <th>Actions</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var url in Model.Urls)
+        {
+            <tr>
+                <td><a href="@url.OriginalUrl" target="_blank">@url.OriginalUrl</a></td>
+                <td><a href="@url.ShortenedUrl" target="_blank">@url.ShortenedUrl</a></td>
+                @if (Model.IsAuthenticated)
+                {
+                    <td>
+                        <a href="@Url.Action("Details", "Home", new { id = url.Id })" class="btn btn-info">View Details</a>
+                        @if (Model.IsAdmin || url.CreatedById == Model.CurrentUserId)
+                        {
+                            <form asp-action="DeleteUrl" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@url.Id" />
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.IsAuthenticated)
+{
+    <h3>Add New URL</h3>
+    <form asp-action="AddUrl" method="post">
+        <div class="form-group">
+            <label for="originalUrl">Original URL</label>
+            <input type="url" class="form-control" id="originalUrl" name="originalUrl" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Add URL</button>
+    </form>
+}
