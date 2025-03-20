@@ -48,11 +48,11 @@ namespace BusinessLogicLayer.Services
 
             var urlDTO = _mapper.Map<UrlDTO>(url);
 
-            // Fetch the creator's email
+
             var creator = _context.Users.FirstOrDefault(u => u.Id == url.CreatedById);
             if (creator != null)
             {
-                urlDTO.CreatedByEmail = creator.Email; // Add the email to the DTO
+                urlDTO.CreatedByEmail = creator.Email; 
             }
 
             return urlDTO;
@@ -67,12 +67,12 @@ namespace BusinessLogicLayer.Services
         {
             var url = _mapper.Map<Url>(urlDTO);
 
-            // Auto-set properties
-            url.CreatedById = userId; // Set the current user's ID
-            url.CreatedDate = DateTime.UtcNow; // Set the current timestamp
+
+            url.CreatedById = userId; 
+            url.CreatedDate = DateTime.UtcNow;
 
             _unitOfWork.UrlRepository.Insert(url);
-            await _unitOfWork.SaveAsync(); // Use SaveAsync for asynchronous saving
+            await _unitOfWork.SaveAsync(); 
         }
 
         private const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -121,7 +121,6 @@ namespace BusinessLogicLayer.Services
                 throw new Exception("URL not found.");
             }
 
-            // Only allow deletion if the user is an admin or the creator of the URL
             if (!isAdmin && url.CreatedById != userId)
             {
                 throw new Exception("You are not authorized to delete this URL.");

@@ -36,11 +36,11 @@ namespace DataAccessLayer.Seed
             }
 
             if (!await context.AboutContents.AnyAsync())
-            {
+            { 
                 context.AboutContents.Add(new AboutContent
                 {
-                    Description = "Our URL shortener uses a unique algorithm to generate short codes. " +
-                                  "It ensures that each code is unique and easy to use."
+                    Description = "This URL shortener generates a random string of 7 characters (A-Z, a-z, 0-9) for each URL. " +
+                            "It ensures uniqueness by checking the database for existing codes before assigning one."
                 });
                 await context.SaveChangesAsync();
             }
