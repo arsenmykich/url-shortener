@@ -7,10 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity;
 
 namespace DataAccessLayer.Data
 {
-    public class AppDbContext : IdentityDbContext<User>
+    public class AppDbContext : IdentityDbContext<User, IdentityRole, string>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

@@ -15,8 +15,9 @@ namespace DataAccessLayer.Entities
         [Url]
         public string OriginalUrl { get; set; }
 
-        [Required]
         [MaxLength(10)]
+        public string Code { get; set; }
+
         public string ShortenedUrl { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
