@@ -1,32 +1,104 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using URLShortener.Models;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using BusinessLogicLayer.DTO;
+using BusinessLogicLayer.Services;
+using URLShortener.ViewModels;
 
 namespace URLShortener.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly UrlService _urlService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(UrlService urlService)
         {
-            _logger = logger;
+            _urlService = urlService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var urls = _urlService.GetAllUrls();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user's ID
+            var isAdmin = User.IsInRole("Admin");
+
+            var viewModel = new UrlTableViewModel
+            {
+                Urls = urls,
+                IsAuthenticated = User.Identity.IsAuthenticated,
+                IsAdmin = isAdmin,
+                CurrentUserId = userId // Populate the CurrentUserId property
+            };
+
+            return View(viewModel);
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddUrl(string originalUrl)
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var urlDTO = new UrlDTO
+            {
+                OriginalUrl = originalUrl,
+                Code = _urlService.GenerateUniqueCode(),
+                ShortenedUrl = $"{Request.Scheme}://{Request.Host}/{_urlService.GenerateUniqueCode()}",
+                CreatedById = userId,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            try
+            {
+                await _urlService.AddUrlAsync(urlDTO, userId);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToAction("Index");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> DeleteUrl(int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+
+            try
+            {
+                await _urlService.DeleteUrlAsync(id, userId, isAdmin);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
+        [Authorize] // Restrict access to authenticated users
+        public IActionResult Details(int id)
+        {
+            var url = _urlService.GetUrlById(id);
+            if (url == null)
+            {
+                return NotFound(); // Return 404 if the URL is not found
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+
+            var viewModel = new UrlDetailsViewModel
+            {
+                Url = url,
+                IsAuthenticated = User.Identity.IsAuthenticated,
+                IsAdmin = isAdmin
+            };
+
+            return View(viewModel);
         }
     }
 }
