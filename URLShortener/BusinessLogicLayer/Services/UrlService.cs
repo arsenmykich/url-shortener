@@ -41,7 +41,21 @@ namespace BusinessLogicLayer.Services
         public UrlDTO GetUrlById(int id)
         {
             var url = _unitOfWork.UrlRepository.GetByID(id);
-            return _mapper.Map<UrlDTO>(url);
+            if (url == null)
+            {
+                return null;
+            }
+
+            var urlDTO = _mapper.Map<UrlDTO>(url);
+
+            // Fetch the creator's email
+            var creator = _context.Users.FirstOrDefault(u => u.Id == url.CreatedById);
+            if (creator != null)
+            {
+                urlDTO.CreatedByEmail = creator.Email; // Add the email to the DTO
+            }
+
+            return urlDTO;
         }
         public void AddUrl(UrlDTO urlDTO)
         {
@@ -98,6 +112,23 @@ namespace BusinessLogicLayer.Services
         {
             _unitOfWork.UrlRepository.Delete(id);
             _unitOfWork.Save();
+        }
+        public async Task DeleteUrlAsync(int id, string userId, bool isAdmin)
+        {
+            var url = _context.Urls.FirstOrDefault(u => u.Id == id);
+            if (url == null)
+            {
+                throw new Exception("URL not found.");
+            }
+
+            // Only allow deletion if the user is an admin or the creator of the URL
+            if (!isAdmin && url.CreatedById != userId)
+            {
+                throw new Exception("You are not authorized to delete this URL.");
+            }
+
+            _context.Urls.Remove(url);
+            await _context.SaveChangesAsync();
         }
     }
 }

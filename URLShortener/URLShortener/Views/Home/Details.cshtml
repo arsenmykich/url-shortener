@@ -1,0 +1,32 @@
+﻿@using System.Security.Claims
+@model URLShortener.ViewModels.UrlDetailsViewModel
+
+@{
+    ViewData["Title"] = "URL Details";
+}
+
+<h2>URL Details</h2>
+
+@if (Model.Url == null)
+{
+    <div class="alert alert-danger">URL not found.</div>
+}
+else
+{
+    <div class="url-details">
+        <p><strong>Original URL:</strong> <a href="@Model.Url.OriginalUrl" target="_blank">@Model.Url.OriginalUrl</a></p>
+        <p><strong>Shortened URL:</strong> <a href="@Model.Url.ShortenedUrl" target="_blank">@Model.Url.ShortenedUrl</a></p>
+        <p><strong>Created By:</strong> @Model.Url.CreatedByEmail</p> <!-- Display email instead of ID -->
+        <p><strong>Created Date:</strong> @($"{Model.Url.CreatedDate:yyyy-MM-dd HH:mm:ss}")</p>
+    </div>
+
+    @if (Model.IsAdmin || Model.Url.CreatedById == User.FindFirstValue(ClaimTypes.NameIdentifier))
+    {
+        <form asp-action="DeleteUrl" method="post" style="display:inline;">
+            <input type="hidden" name="id" value="@Model.Url.Id" />
+            <button type="submit" class="btn btn-danger">Delete URL</button>
+        </form>
+    }
+}
+
+<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Back to List</a>
