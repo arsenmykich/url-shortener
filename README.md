@@ -38,24 +38,24 @@ A lightweight URL shortening service built with ASP.NET Core MVC and Entity Fram
 add-migration migrationName
 update-database
 ```
-Usage
-1.**Register/Login:**
-  Navigate to /Account/Register to create an account.
+## Usage
+# 1.**Register/Login:**
+  - Navigate to /Account/Register to create an account.
 
   **For Admin:**
     Email: admin@example.com
     Password: Admin123!
   
 
-2.**Shorten a URL:**
-  Authenticated users can enter a URL in the "Add New URL" section.
-  Shortened URLs are automatically added to the table.
+# 2.**Shorten a URL:**
+ - Authenticated users can enter a URL in the "Add New URL" section.
+ - Shortened URLs are automatically added to the table.
 
-3.**Manage URLs:**
-  **View Details:** Click "View Details" to see metadata.
-  **Delete URLs:** Admins can delete any URL; users can only delete their own.
+# 3.**Manage URLs:**
+ - **View Details:** Click "View Details" to see metadata.
+ - **Delete URLs:** Admins can delete any URL; users can only delete their own.
 
-**Configuration**
-  **Admin Role:** Modify the IdentitySeed.cs to change default admin credentials.
-  **Short Code Length:** Adjust NumberOfCharsInShortLink in UrlService.cs.
-  **Validation: Customize** URL validation rules in the Url model.
+## **Configuration**
+ - **Admin Role:** Modify the IdentitySeed.cs to change default admin credentials.
+ - **Short Code Length:** Adjust NumberOfCharsInShortLink in UrlService.cs.
+ - **Validation: Customize** URL validation rules in the Url model.
