@@ -31,7 +31,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<UrlService>();
-builder.Services.AddScoped<UrlShorteningService>();
 //</>
 
 

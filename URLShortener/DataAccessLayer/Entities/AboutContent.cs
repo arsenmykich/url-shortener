@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Entities
 {
-    // DataAccessLayer/Entities/AboutContent.cs
     public class AboutContent
     {
         public int Id { get; set; }

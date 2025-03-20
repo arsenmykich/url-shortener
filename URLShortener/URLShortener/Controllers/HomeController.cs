@@ -20,7 +20,7 @@ namespace URLShortener.Controllers
         public IActionResult Index()
         {
             var urls = _urlService.GetAllUrls();
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
 
             var viewModel = new UrlTableViewModel
@@ -28,7 +28,7 @@ namespace URLShortener.Controllers
                 Urls = urls,
                 IsAuthenticated = User.Identity.IsAuthenticated,
                 IsAdmin = isAdmin,
-                CurrentUserId = userId // Populate the CurrentUserId property
+                CurrentUserId = userId
             };
 
             return View(viewModel);
@@ -62,7 +62,6 @@ namespace URLShortener.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> DeleteUrl(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -79,13 +78,13 @@ namespace URLShortener.Controllers
 
             return RedirectToAction("Index");
         }
-        [Authorize] // Restrict access to authenticated users
+        [Authorize]
         public IActionResult Details(int id)
         {
             var url = _urlService.GetUrlById(id);
             if (url == null)
             {
-                return NotFound(); // Return 404 if the URL is not found
+                return NotFound(); 
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

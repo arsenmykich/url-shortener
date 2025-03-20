@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using URLShortener.Models;
 using Microsoft.EntityFrameworkCore;
+using URLShortener.ViewModels;
 
 namespace URLShortener.Controllers
 {
-    // Controllers/AboutController.cs
     public class AboutController : Controller
     {
         private readonly AppDbContext _context;
@@ -54,5 +54,6 @@ namespace URLShortener.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+
     }
 }

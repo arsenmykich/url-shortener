@@ -16,6 +16,6 @@ namespace BusinessLogicLayer.DTO
         public string? ShortenedUrl { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.UtcNow;
         public string? CreatedById { get; set; }
-        public string? CreatedByEmail { get; set; } // Add this property
+        public string? CreatedByEmail { get; set; } 
     }
 }
