@@ -39,11 +39,20 @@ builder.Services.AddScoped<UrlShorteningService>();
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddRoles<IdentityRole>()
+    .AddDefaultTokenProviders()
     .AddApiEndpoints();
 
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddScoped<IRoleStore<IdentityRole>, RoleStore<IdentityRole, AppDbContext>>();
 
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login"; // Redirect to login page if unauthorized
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect if access is denied
+    options.SlidingExpiration = true; // Renew the cookie expiration time
+    options.ExpireTimeSpan = TimeSpan.FromDays(7); // Set cookie expiration time
+});
 //builder.Services.AddAuthorization();
 //builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
 //    .AddBearerToken(IdentityConstants.BearerScheme);
@@ -62,7 +71,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<User>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    await IdentitySeed.SeedAsync(userManager, roleManager);
+    var context = services.GetRequiredService<AppDbContext>();
+    await IdentitySeed.SeedAsync(userManager, roleManager, context);
 }
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

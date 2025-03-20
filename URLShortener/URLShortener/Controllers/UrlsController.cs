@@ -94,6 +94,7 @@ namespace URLShortener.Controllers
             return Ok();
         }
 
+        [Authorize(Roles ="Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

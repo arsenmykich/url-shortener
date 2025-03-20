@@ -1,0 +1,17 @@
+﻿@model AboutViewModel
+
+<!-- Views/About/Index.cshtml -->
+<div class="about-container">
+    <h2>About Our URL Shortener</h2>
+    <div class="content">
+        <p>@Model.Content</p>
+    </div>
+
+    @if (Model.IsAdmin)
+    {
+        <form asp-action="Update" method="post">
+            <textarea name="content" class="form-control">@Model.Content</textarea>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    }
+</div>

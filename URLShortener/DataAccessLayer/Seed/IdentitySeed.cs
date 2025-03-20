@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Data;
 
 namespace DataAccessLayer.Seed
 {
     public static class IdentitySeed
     {
-        public static async Task SeedAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, AppDbContext context)
         {
             // Create roles
             string[] roleNames = { "Admin", "User" };
@@ -30,13 +31,22 @@ namespace DataAccessLayer.Seed
                 Email = "admin@example.com"
             };
 
-            if (await userManager.FindByEmailAsync(adminUser.Email) == null)
+            //if (await userManager.FindByEmailAsync(adminUser.Email) == null)
+            //{
+            await userManager.CreateAsync(adminUser, "Admin123!");
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            //}
+
+            if (!await context.AboutContents.AnyAsync())
             {
-                await userManager.CreateAsync(adminUser, "Admin123!");
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                context.AboutContents.Add(new AboutContent
+                {
+                    Description = "Our URL shortener uses a unique algorithm to generate short codes. " +
+                                  "It ensures that each code is unique and easy to use."
+                });
+                await context.SaveChangesAsync();
             }
         }
     }
 
 }
-
