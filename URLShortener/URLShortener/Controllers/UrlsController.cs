@@ -22,8 +22,6 @@ namespace URLShortener.Controllers
     public class UrlsController : ControllerBase
     {
         private readonly UrlService _urlService;
-
-        private readonly UrlShorteningService _urlShorteningService;
         private readonly UserManager<User> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -38,13 +36,13 @@ namespace URLShortener.Controllers
 
         }
 
-
         [HttpGet]
         public IActionResult Get()
         {
             var urls = _urlService.GetAllUrls();
             return Ok(urls);
         }
+
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -52,40 +50,25 @@ namespace URLShortener.Controllers
             return Ok(url);
         }
 
-
-        //[Authorize]
-        //[HttpPost]
-        //public async Task<IActionResult> Post([FromBody] UrlDTO urlDTO)
-        //{
-        //    // Get current user's ID
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        //    // Pass user ID to the service
-        //    await _urlService.AddUrlAsync(urlDTO, userId);
-        //    return Ok();
-        //}
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] UrlDTO urlDTO)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             //UrlDTO urlDTO = new UrlDTO();
             //urlDTO.OriginalUrl = OriginalUrl;
-            urlDTO.CreatedById = userId; // Set the current user's ID
-            urlDTO.CreatedDate = DateTime.UtcNow; // Set the current timestamp
+            urlDTO.CreatedById = userId;
+            urlDTO.CreatedDate = DateTime.UtcNow;
             if (!Uri.TryCreate(urlDTO.OriginalUrl, UriKind.Absolute, out _))
             {
                 return BadRequest("Invalid URL");
             }
             urlDTO.Code = _urlService.GenerateUniqueCode();
             urlDTO.ShortenedUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://" +
-                                  $"{_httpContextAccessor.HttpContext.Request.Host}/api/{urlDTO.Code}";
+                                  $"{_httpContextAccessor.HttpContext.Request.Host}/api/{urlDTO.Code}";// MOVE THIS ALL TO SERVICE
 
             _urlService.AddUrl(urlDTO);
             return Ok(urlDTO);
         }
-
-
-
 
         [HttpPut]
         public IActionResult Put([FromBody] UrlDTO urlDTO)

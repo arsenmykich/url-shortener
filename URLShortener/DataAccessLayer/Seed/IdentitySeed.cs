@@ -14,7 +14,6 @@ namespace DataAccessLayer.Seed
     {
         public static async Task SeedAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, AppDbContext context)
         {
-            // Create roles
             string[] roleNames = { "Admin", "User" };
             foreach (var roleName in roleNames)
             {
@@ -24,18 +23,17 @@ namespace DataAccessLayer.Seed
                 }
             }
 
-            // Create admin user
             var adminUser = new User
             {
                 UserName = "admin@example.com",
                 Email = "admin@example.com"
             };
 
-            //if (await userManager.FindByEmailAsync(adminUser.Email) == null)
-            //{
-            await userManager.CreateAsync(adminUser, "Admin123!");
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-            //}
+            if (await userManager.FindByEmailAsync(adminUser.Email) == null)
+            {
+                await userManager.CreateAsync(adminUser, "Admin123!");
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
 
             if (!await context.AboutContents.AnyAsync())
             {
